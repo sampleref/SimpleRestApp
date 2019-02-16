@@ -23,7 +23,7 @@ public class UserServiceDao {
         while (!connectionCreated) {
             try {
                 // DriverManager: The basic service for managing a set of JDBC drivers.
-                userServiceDbConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/userservice", "root", "root");
+                userServiceDbConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "root", "root");
                 if (userServiceDbConn != null) {
                     LoggerUtils.logMessage("Connection Successful");
                     connectionCreated = true;
