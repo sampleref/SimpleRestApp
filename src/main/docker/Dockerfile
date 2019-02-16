@@ -13,9 +13,11 @@ RUN  \
 RUN mkdir -p /local/git
 WORKDIR /local/git
 
-RUN git clone https://github.com/sampleref/SimpleRestApp.git
+RUN git clone https://github.com/sampleref/SimpleRestApp.git && \
+    cd SimpleRestApp && \
+    mvn clean install
 
-CMD cd SimpleRestApp && \
-    mvn spring-boot:run
+CMD cd SimpleRestApp/target && \
+    java -jar SimpleWebApp.jar
 
 

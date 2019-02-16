@@ -32,7 +32,7 @@ public class UserServiceDao {
                 }
             } catch (SQLException e) {
                 LoggerUtils.logMessage("MySQL Connection Failed. Trying again");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
