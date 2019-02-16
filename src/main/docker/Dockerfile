@@ -1,12 +1,4 @@
-FROM java:8
-
-# update packages and install maven
-RUN  \
-  export DEBIAN_FRONTEND=noninteractive && \
-  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
-  apt-get update && \
-  apt-get -y upgrade && \
-  apt-get install -y vim wget curl git maven
+FROM nas2docker/java8:latest
 
 
 # create working directory
@@ -15,7 +7,7 @@ WORKDIR /local/git
 
 RUN git clone https://github.com/sampleref/SimpleRestApp.git && \
     cd SimpleRestApp && \
-    mvn package spring-boot:repackage
+    mvn clean install
 
 CMD cd SimpleRestApp/target && \
     java -jar SimpleWebApp.jar

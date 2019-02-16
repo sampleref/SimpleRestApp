@@ -1,16 +1,19 @@
 package org.simple;
 
-import org.simple.controller.UserServiceRestController;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.simple.controller.SparkUserServiceController;
+import org.simple.utils.LoggerUtils;
+import spark.Spark;
 
-@EnableAutoConfiguration
 public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserServiceRestController.class, args);
+
+        Spark.port(8081);
+        SparkUserServiceController sparkUserServiceController = new SparkUserServiceController();
+        sparkUserServiceController.attachHandlers();
+        LoggerUtils.logMessage("Listening ... ");
+        while (true) {
+
+        }
     }
 }
