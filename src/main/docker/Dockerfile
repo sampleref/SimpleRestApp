@@ -15,7 +15,7 @@ WORKDIR /local/git
 
 RUN git clone https://github.com/sampleref/SimpleRestApp.git && \
     cd SimpleRestApp && \
-    mvn clean install
+    mvn package spring-boot:repackage
 
 CMD cd SimpleRestApp/target && \
     java -jar SimpleWebApp.jar
