@@ -13,3 +13,9 @@ RUN  \
 RUN mkdir -p /local/git
 WORKDIR /local/git
 
+RUN git clone https://github.com/sampleref/SimpleRestApp.git
+
+CMD cd SimpleRestApp && \
+    mvn spring-boot:run
+
+
