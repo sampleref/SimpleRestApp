@@ -12,7 +12,7 @@ public class UserServiceDao {
 
     public UserServiceDao() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             LoggerUtils.logMessage("MySQL JDBC Driver Registered!");
         } catch (ClassNotFoundException e) {
             LoggerUtils.logMessage("Please check to add JDBC Maven Dependency");
@@ -23,7 +23,7 @@ public class UserServiceDao {
         while (!connectionCreated) {
             try {
                 // DriverManager: The basic service for managing a set of JDBC drivers.
-                userServiceDbConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "root", "root");
+                userServiceDbConn = DriverManager.getConnection("jdbc:mysql://192.168.1.5:3306/users", "root", "root");
                 if (userServiceDbConn != null) {
                     LoggerUtils.logMessage("Connection Successful");
                     connectionCreated = true;
@@ -31,8 +31,9 @@ public class UserServiceDao {
                     LoggerUtils.logMessage("Failed to make connection. Trying again");
                 }
             } catch (SQLException e) {
-                LoggerUtils.logMessage("MySQL Connection Failed. Trying again");
+                LoggerUtils.logMessage("MySQL Connection Failed. Trying again " + e.getMessage());
                 //e.printStackTrace();
+                connectionCreated = true;
             }
         }
     }
@@ -58,25 +59,26 @@ public class UserServiceDao {
     public User fetchUser(String userId) {
         LoggerUtils.logMessage(userId + " fetching ... ");
         try {
-            String selectStatement = "SELECT * FROM  Users  WHERE used_id=?";
+            String selectStatement = "SELECT * FROM  Users WHERE id=?";
             PreparedStatement preparedStatement = userServiceDbConn.prepareStatement(selectStatement);
             preparedStatement.setString(1, userId);
 
             // execute select SQL statement
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.getFetchSize() == 0) {
-                LoggerUtils.logMessage("No user found with id " + userId);
+            if (resultSet.next()) {
+                User user = new User();
+                user.setUserId(resultSet.getString(Constants.USER_ID));
+                user.setFirstName(resultSet.getString(Constants.FIRST_NAME));
+                user.setLastName(resultSet.getString(Constants.LAST_NAME));
+                user.setAge(resultSet.getInt(Constants.AGE));
+                LoggerUtils.logMessage(user + " fetched successfully");
+                return user;
+            } else {
+                LoggerUtils.logMessage("Not found fetchUser " + userId);
                 return null;
             }
-            User user = new User();
-            user.setUserId(resultSet.getString(Constants.USER_ID));
-            user.setFirstName(resultSet.getString(Constants.LAST_NAME));
-            user.setLastName(resultSet.getString(Constants.LAST_NAME));
-            user.setAge(resultSet.getInt(Constants.AGE));
-            LoggerUtils.logMessage(user + " fetched successfully");
-            return user;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LoggerUtils.logMessage("Exception in fetchUser " + e.getMessage());
             return null;
         }
     }
@@ -84,7 +86,7 @@ public class UserServiceDao {
     public void updateUser(User user) {
         LoggerUtils.logMessage(user + " updating ... ");
         try {
-            String updateStatement = "UPDATE Users SET first_name=?, last_name=?, age=? WHERE user_id=?";
+            String updateStatement = "UPDATE Users SET first_name=?, last_name=?, user_age=? WHERE id=?";
             PreparedStatement preparedStatement = userServiceDbConn.prepareStatement(updateStatement);
             preparedStatement.setString(1, user.getFirstName());
             preparedStatement.setString(2, user.getLastName());
@@ -102,7 +104,7 @@ public class UserServiceDao {
     public void deleteUser(String userId) {
         LoggerUtils.logMessage(userId + " deleting ... ");
         try {
-            String updateStatement = "DELETE FROM Users WHERE user_id=?";
+            String updateStatement = "DELETE FROM Users WHERE id=?";
             PreparedStatement preparedStatement = userServiceDbConn.prepareStatement(updateStatement);
             preparedStatement.setString(1, userId);
 

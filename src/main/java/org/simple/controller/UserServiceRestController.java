@@ -3,8 +3,10 @@ package org.simple.controller;
 import org.simple.dao.UserServiceDao;
 import org.simple.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 
+@SpringBootApplication(scanBasePackages = {"org.simple.*"})
 @RestController
 public class UserServiceRestController {
 
@@ -15,7 +17,7 @@ public class UserServiceRestController {
     }
 
     @Autowired
-    private User person;
+    private User user;
 
     @RequestMapping("/")
     public String healthCheck() {
@@ -25,7 +27,7 @@ public class UserServiceRestController {
     @RequestMapping("/user/get")
     public User getUser(@RequestParam(name = "user_id", required = false, defaultValue = "Unknown") String userId) {
         User user = userServiceDao.fetchUser(userId);
-        return user;
+        return user != null ? user : new User();
     }
 
     @RequestMapping("/user/delete")
@@ -38,9 +40,9 @@ public class UserServiceRestController {
     public User updatePerson(@RequestBody User userReceived) {
         User user = userServiceDao.fetchUser(userReceived.getUserId());
         if (user != null) {
-            userServiceDao.updateUser(user);
+            userServiceDao.updateUser(userReceived);
         } else {
-            userServiceDao.addUser(user);
+            userServiceDao.addUser(userReceived);
         }
         return userReceived;
     }
